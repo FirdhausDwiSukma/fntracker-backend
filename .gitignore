@@ -1,0 +1,35 @@
+# Environment variables — JANGAN PERNAH di-push
+.env
+.env.local
+.env.*.local
+
+# Binary hasil build
+finance-tracker
+*.exe
+*.out
+/bin/
+
+# Go build cache
+/vendor/
+
+# Test output & coverage
+*.test
+*.out
+coverage.html
+coverage.out
+
+# IDE & editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Air (live reload tool)
+tmp/
