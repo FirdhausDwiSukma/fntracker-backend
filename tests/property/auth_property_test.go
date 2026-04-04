@@ -82,8 +82,11 @@ func setupTestEnv(t *testing.T) *testEnv {
 	gin.SetMode(gin.TestMode)
 
 	userRepo := repositories.NewUserRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
 	authSvc := services.NewAuthService(userRepo, jwtSecret)
+	categorySvc := services.NewCategoryService(categoryRepo)
 	authCtrl := controllers.NewAuthController(authSvc)
+	categoryCtrl := controllers.NewCategoryController(categorySvc)
 
 	cfg := &config.Config{
 		JWTSecret:      jwtSecret,
@@ -92,7 +95,7 @@ func setupTestEnv(t *testing.T) *testEnv {
 		Env:            "test",
 	}
 
-	router := routes.SetupRouter(cfg, authCtrl)
+	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl)
 
 	// Minimal protected group for Properties 6 and 8.
 	protected := router.Group("/api/protected")
