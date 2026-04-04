@@ -10,6 +10,11 @@ import (
 	"time"
 
 	"finance-tracker/config"
+	"finance-tracker/controllers"
+	"finance-tracker/models"
+	"finance-tracker/repositories"
+	"finance-tracker/routes"
+	"finance-tracker/services"
 )
 
 func main() {
@@ -24,45 +29,30 @@ func main() {
 		log.Println("Warning: JWT_SECRET is not set. Authentication will not work.")
 	}
 
-	// TODO: Connect to database and wire all components.
-	// db, err := config.ConnectDatabase(cfg.DBUrl,
-	//     &models.User{}, &models.Category{}, &models.Transaction{}, &models.Budget{},
-	// )
-	// if err != nil {
-	//     log.Fatalf("Failed to connect to database: %v", err)
-	// }
-	//
-	// Repositories
-	// userRepo := repositories.NewUserRepository(db)
-	// categoryRepo := repositories.NewCategoryRepository(db)
-	// transactionRepo := repositories.NewTransactionRepository(db)
-	// budgetRepo := repositories.NewBudgetRepository(db)
-	//
-	// Services
-	// authSvc := services.NewAuthService(userRepo, cfg.JWTSecret)
-	// categorySvc := services.NewCategoryService(categoryRepo)
-	// transactionSvc := services.NewTransactionService(transactionRepo, categoryRepo)
-	// budgetSvc := services.NewBudgetService(budgetRepo, transactionRepo)
-	// dashboardSvc := services.NewDashboardService(transactionRepo, budgetRepo)
-	//
-	// Controllers
-	// authCtrl := controllers.NewAuthController(authSvc)
-	// categoryCtrl := controllers.NewCategoryController(categorySvc)
-	// transactionCtrl := controllers.NewTransactionController(transactionSvc)
-	// budgetCtrl := controllers.NewBudgetController(budgetSvc)
-	// dashboardCtrl := controllers.NewDashboardController(dashboardSvc)
-	//
-	// Router
-	// router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl, budgetCtrl, dashboardCtrl)
+	// Connect DB
+	db, err := config.ConnectDatabase(cfg.DBUrl,
+		&models.User{}, &models.Category{}, &models.Transaction{}, &models.Budget{},
+	)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
 
-	// Placeholder HTTP server — will be replaced with Gin router once all components are wired.
+	// Repositories
+	userRepo := repositories.NewUserRepository(db)
+
+	// Services
+	authSvc := services.NewAuthService(userRepo, cfg.JWTSecret)
+
+	// Controllers
+	authCtrl := controllers.NewAuthController(authSvc)
+
+	// Router
+	router := routes.SetupRouter(cfg, authCtrl)
+
+	// Use router as the HTTP handler
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(`{"message":"Finance Tracker API is running"}`))
-		}),
+		Handler: router,
 	}
 
 	// Start server in a goroutine for graceful shutdown support.
