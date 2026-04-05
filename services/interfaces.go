@@ -31,3 +31,10 @@ type TransactionService interface {
 	Delete(userID uint, txID uint) error
 	ExportCSV(userID uint, filter dto.ExportFilter) ([]byte, error)
 }
+
+type BudgetService interface {
+	GetAllByUser(userID uint, month, year int) ([]dto.BudgetResponse, error)
+	Create(userID uint, req dto.BudgetRequest) (*models.Budget, error)
+	Update(userID uint, budgetID uint, req dto.BudgetRequest) (*models.Budget, error)
+	Delete(userID uint, budgetID uint) error
+}

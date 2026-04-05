@@ -41,19 +41,22 @@ func main() {
 	userRepo := repositories.NewUserRepository(db)
 	categoryRepo := repositories.NewCategoryRepository(db)
 	transactionRepo := repositories.NewTransactionRepository(db)
+	budgetRepo := repositories.NewBudgetRepository(db)
 
 	// Services
 	authSvc := services.NewAuthService(userRepo, cfg.JWTSecret)
 	categorySvc := services.NewCategoryService(categoryRepo)
 	transactionSvc := services.NewTransactionService(transactionRepo, categoryRepo)
+	budgetSvc := services.NewBudgetService(budgetRepo, transactionRepo, categoryRepo)
 
 	// Controllers
 	authCtrl := controllers.NewAuthController(authSvc)
 	categoryCtrl := controllers.NewCategoryController(categorySvc)
 	transactionCtrl := controllers.NewTransactionController(transactionSvc)
+	budgetCtrl := controllers.NewBudgetController(budgetSvc)
 
 	// Router
-	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl)
+	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl, budgetCtrl)
 
 	// Use router as the HTTP handler
 	srv := &http.Server{

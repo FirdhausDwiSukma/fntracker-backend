@@ -30,3 +30,12 @@ type TransactionRepository interface {
 	GetMonthlyAggregates(userID uint, months int) ([]dto.MonthlyAggregate, error)
 	GetTopExpenseCategories(userID uint, month, year int, limit int) ([]dto.CategoryExpense, error)
 }
+
+type BudgetRepository interface {
+	FindAllByUser(userID uint, month, year int) ([]models.Budget, error)
+	FindByIDAndUser(id, userID uint) (*models.Budget, error)
+	FindByUserCategoryMonthYear(userID, categoryID uint, month, year int) (*models.Budget, error)
+	Create(budget *models.Budget) error
+	Update(budget *models.Budget) error
+	Delete(id, userID uint) error
+}
