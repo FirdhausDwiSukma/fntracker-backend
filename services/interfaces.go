@@ -15,6 +15,7 @@ type LoginResponse struct {
 type AuthService interface {
 	Register(req dto.RegisterRequest) (*models.User, error)
 	Login(req dto.LoginRequest) (*LoginResponse, error)
+	GetUserByID(id uint) (*models.User, error)
 }
 
 type CategoryService interface {

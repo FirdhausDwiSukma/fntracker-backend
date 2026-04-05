@@ -74,3 +74,14 @@ func (s *authService) Login(req dto.LoginRequest) (*LoginResponse, error) {
 	user.Password = ""
 	return &LoginResponse{User: user, Token: token, CsrfToken: csrfToken}, nil
 }
+
+func (s *authService) GetUserByID(id uint) (*models.User, error) {
+	user, err := s.userRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if user != nil {
+		user.Password = ""
+	}
+	return user, nil
+}

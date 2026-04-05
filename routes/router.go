@@ -30,6 +30,7 @@ func SetupRouter(
 		auth.POST("/register", authCtrl.Register)
 		auth.POST("/login", middleware.LoginRateLimiter(), authCtrl.Login)
 		auth.POST("/logout", authCtrl.Logout)
+		auth.GET("/me", middleware.JWTAuthMiddleware(cfg.JWTSecret), authCtrl.Me)
 	}
 
 	protected := r.Group("/api")

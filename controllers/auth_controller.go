@@ -80,6 +80,16 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	utils.SuccessResponse(ctx, http.StatusOK, "login successful", result.User)
 }
 
+func (c *AuthController) Me(ctx *gin.Context) {
+	userID := ctx.GetUint("userID")
+	user, err := c.authService.GetUserByID(userID)
+	if err != nil || user == nil {
+		utils.ErrorResponse(ctx, http.StatusUnauthorized, utils.ErrUnauthorized)
+		return
+	}
+	utils.SuccessResponse(ctx, http.StatusOK, "ok", user)
+}
+
 func (c *AuthController) Logout(ctx *gin.Context) {
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     "jwt",
