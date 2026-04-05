@@ -71,8 +71,13 @@ func (c *TransactionController) GetAll(ctx *gin.Context) {
 
 	totalPages := int(math.Ceil(float64(total) / float64(filter.Limit)))
 
+	responses := make([]dto.TransactionResponse, len(transactions))
+	for i, tx := range transactions {
+		responses[i] = dto.ToTransactionResponse(tx)
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"data":        transactions,
+		"data":        responses,
 		"total":       total,
 		"page":        filter.Page,
 		"limit":       filter.Limit,
@@ -102,7 +107,7 @@ func (c *TransactionController) Create(ctx *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(ctx, http.StatusCreated, "transaction created", tx)
+	utils.SuccessResponse(ctx, http.StatusCreated, "transaction created", dto.ToTransactionResponsePtr(tx))
 }
 
 func (c *TransactionController) Update(ctx *gin.Context) {
@@ -136,7 +141,7 @@ func (c *TransactionController) Update(ctx *gin.Context) {
 		return
 	}
 
-	utils.SuccessResponse(ctx, http.StatusOK, "transaction updated", tx)
+	utils.SuccessResponse(ctx, http.StatusOK, "transaction updated", dto.ToTransactionResponsePtr(tx))
 }
 
 func (c *TransactionController) Delete(ctx *gin.Context) {
