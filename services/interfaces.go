@@ -23,3 +23,11 @@ type CategoryService interface {
 	Update(userID uint, categoryID uint, req dto.CategoryRequest) (*models.Category, error)
 	Delete(userID uint, categoryID uint) error
 }
+
+type TransactionService interface {
+	GetAllByUser(userID uint, filter dto.TransactionFilter) ([]models.Transaction, int64, error)
+	Create(userID uint, req dto.TransactionRequest) (*models.Transaction, error)
+	Update(userID uint, txID uint, req dto.TransactionRequest) (*models.Transaction, error)
+	Delete(userID uint, txID uint) error
+	ExportCSV(userID uint, filter dto.ExportFilter) ([]byte, error)
+}

@@ -12,6 +12,7 @@ func SetupRouter(
 	cfg *config.Config,
 	authCtrl *controllers.AuthController,
 	categoryCtrl *controllers.CategoryController,
+	transactionCtrl *controllers.TransactionController,
 ) *gin.Engine {
 	r := gin.New()
 
@@ -36,6 +37,12 @@ func SetupRouter(
 		protected.POST("/categories", categoryCtrl.Create)
 		protected.PUT("/categories/:id", categoryCtrl.Update)
 		protected.DELETE("/categories/:id", categoryCtrl.Delete)
+
+		protected.GET("/transactions", transactionCtrl.GetAll)
+		protected.GET("/transactions/export", transactionCtrl.Export)
+		protected.POST("/transactions", transactionCtrl.Create)
+		protected.PUT("/transactions/:id", transactionCtrl.Update)
+		protected.DELETE("/transactions/:id", transactionCtrl.Delete)
 	}
 
 	return r

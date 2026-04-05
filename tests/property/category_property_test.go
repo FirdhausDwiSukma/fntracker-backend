@@ -63,12 +63,15 @@ func setupCategoryEnv(t *testing.T) *testEnv {
 
 	userRepo := repositories.NewUserRepository(db)
 	categoryRepo := repositories.NewCategoryRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db)
 
 	authSvc := services.NewAuthService(userRepo, jwtSecret)
 	categorySvc := services.NewCategoryService(categoryRepo)
+	transactionSvc := services.NewTransactionService(transactionRepo, categoryRepo)
 
 	authCtrl := controllers.NewAuthController(authSvc)
 	categoryCtrl := controllers.NewCategoryController(categorySvc)
+	transactionCtrl := controllers.NewTransactionController(transactionSvc)
 
 	cfg := &config.Config{
 		JWTSecret:      jwtSecret,
@@ -77,7 +80,7 @@ func setupCategoryEnv(t *testing.T) *testEnv {
 		Env:            "test",
 	}
 
-	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl)
+	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl)
 	return &testEnv{router: router, db: db}
 }
 

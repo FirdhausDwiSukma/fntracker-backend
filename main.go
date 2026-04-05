@@ -40,17 +40,20 @@ func main() {
 	// Repositories
 	userRepo := repositories.NewUserRepository(db)
 	categoryRepo := repositories.NewCategoryRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db)
 
 	// Services
 	authSvc := services.NewAuthService(userRepo, cfg.JWTSecret)
 	categorySvc := services.NewCategoryService(categoryRepo)
+	transactionSvc := services.NewTransactionService(transactionRepo, categoryRepo)
 
 	// Controllers
 	authCtrl := controllers.NewAuthController(authSvc)
 	categoryCtrl := controllers.NewCategoryController(categorySvc)
+	transactionCtrl := controllers.NewTransactionController(transactionSvc)
 
 	// Router
-	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl)
+	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl)
 
 	// Use router as the HTTP handler
 	srv := &http.Server{

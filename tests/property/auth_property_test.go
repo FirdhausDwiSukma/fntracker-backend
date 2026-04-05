@@ -83,10 +83,13 @@ func setupTestEnv(t *testing.T) *testEnv {
 
 	userRepo := repositories.NewUserRepository(db)
 	categoryRepo := repositories.NewCategoryRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db)
 	authSvc := services.NewAuthService(userRepo, jwtSecret)
 	categorySvc := services.NewCategoryService(categoryRepo)
+	transactionSvc := services.NewTransactionService(transactionRepo, categoryRepo)
 	authCtrl := controllers.NewAuthController(authSvc)
 	categoryCtrl := controllers.NewCategoryController(categorySvc)
+	transactionCtrl := controllers.NewTransactionController(transactionSvc)
 
 	cfg := &config.Config{
 		JWTSecret:      jwtSecret,
@@ -95,7 +98,7 @@ func setupTestEnv(t *testing.T) *testEnv {
 		Env:            "test",
 	}
 
-	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl)
+	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl)
 
 	// Minimal protected group for Properties 6 and 8.
 	protected := router.Group("/api/protected")

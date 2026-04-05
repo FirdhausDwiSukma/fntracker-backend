@@ -18,6 +18,12 @@ finance-tracker
 coverage.html
 coverage.out
 
+# Property-based test failure corpus (rapid testdata)
+tests/property/testdata/
+
+# Folder frontend yang salah masuk ke backend
+finance-tracker/
+
 # IDE & editor
 .vscode/
 .idea/
@@ -28,7 +34,7 @@ coverage.out
 .DS_Store
 Thumbs.db
 
-# Docker
+# Logs
 *.log
 
 # Air (live reload tool)
