@@ -48,15 +48,17 @@ func main() {
 	categorySvc := services.NewCategoryService(categoryRepo)
 	transactionSvc := services.NewTransactionService(transactionRepo, categoryRepo)
 	budgetSvc := services.NewBudgetService(budgetRepo, transactionRepo, categoryRepo)
+	dashboardSvc := services.NewDashboardService(transactionRepo, budgetRepo)
 
 	// Controllers
 	authCtrl := controllers.NewAuthController(authSvc)
 	categoryCtrl := controllers.NewCategoryController(categorySvc)
 	transactionCtrl := controllers.NewTransactionController(transactionSvc)
 	budgetCtrl := controllers.NewBudgetController(budgetSvc)
+	dashboardCtrl := controllers.NewDashboardController(dashboardSvc)
 
 	// Router
-	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl, budgetCtrl)
+	router := routes.SetupRouter(cfg, authCtrl, categoryCtrl, transactionCtrl, budgetCtrl, dashboardCtrl)
 
 	// Use router as the HTTP handler
 	srv := &http.Server{

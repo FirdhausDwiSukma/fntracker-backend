@@ -14,6 +14,7 @@ func SetupRouter(
 	categoryCtrl *controllers.CategoryController,
 	transactionCtrl *controllers.TransactionController,
 	budgetCtrl *controllers.BudgetController,
+	dashboardCtrl *controllers.DashboardController,
 ) *gin.Engine {
 	r := gin.New()
 
@@ -49,6 +50,8 @@ func SetupRouter(
 		protected.POST("/budgets", budgetCtrl.Create)
 		protected.PUT("/budgets/:id", budgetCtrl.Update)
 		protected.DELETE("/budgets/:id", budgetCtrl.Delete)
+
+		protected.GET("/dashboard", dashboardCtrl.GetSummary)
 	}
 
 	return r

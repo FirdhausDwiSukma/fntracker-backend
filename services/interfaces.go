@@ -38,3 +38,7 @@ type BudgetService interface {
 	Update(userID uint, budgetID uint, req dto.BudgetRequest) (*models.Budget, error)
 	Delete(userID uint, budgetID uint) error
 }
+
+type DashboardService interface {
+	GetSummary(userID uint, month, year int) (*dto.DashboardResponse, error)
+}
