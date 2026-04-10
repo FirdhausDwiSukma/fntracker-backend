@@ -110,7 +110,7 @@ func (s *transactionService) ExportCSV(userID uint, filter dto.ExportFilter) ([]
 		StartDate: filter.StartDate,
 		EndDate:   filter.EndDate,
 		Page:      1,
-		Limit:     100000, // large limit for export
+		Limit:     10000, // cap export at 10k rows to prevent memory exhaustion
 	}
 
 	transactions, _, err := s.txRepo.FindAllByUser(userID, txFilter)

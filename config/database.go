@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,8 +15,14 @@ var DB *gorm.DB
 // ConnectDatabase establishes a PostgreSQL connection via GORM.
 // Models passed in the migrate parameter will be auto-migrated.
 func ConnectDatabase(dsn string, migrate ...interface{}) (*gorm.DB, error) {
+	// Use Silent log level in production to avoid leaking query data in logs.
+	logLevel := logger.Info
+	if os.Getenv("ENV") == "production" {
+		logLevel = logger.Silent
+	}
+
 	gormConfig := &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logLevel),
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), gormConfig)

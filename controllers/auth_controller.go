@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 
 	"finance-tracker/dto"
 	"finance-tracker/services"
@@ -56,12 +57,13 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	}
 
 	// Set JWT cookie (HttpOnly, not readable by JS)
+	secureCookie := os.Getenv("ENV") == "production"
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     "jwt",
 		Value:    result.Token,
 		MaxAge:   86400,
 		Path:     "/",
-		Secure:   true,
+		Secure:   secureCookie,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	})
@@ -72,7 +74,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		Value:    result.CsrfToken,
 		MaxAge:   86400,
 		Path:     "/",
-		Secure:   true,
+		Secure:   secureCookie,
 		HttpOnly: false,
 		SameSite: http.SameSiteStrictMode,
 	})
@@ -96,7 +98,7 @@ func (c *AuthController) Logout(ctx *gin.Context) {
 		Value:    "",
 		MaxAge:   0,
 		Path:     "/",
-		Secure:   true,
+		Secure:   os.Getenv("ENV") == "production",
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	})
@@ -106,7 +108,7 @@ func (c *AuthController) Logout(ctx *gin.Context) {
 		Value:    "",
 		MaxAge:   0,
 		Path:     "/",
-		Secure:   true,
+		Secure:   os.Getenv("ENV") == "production",
 		HttpOnly: false,
 		SameSite: http.SameSiteStrictMode,
 	})

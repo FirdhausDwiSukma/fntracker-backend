@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"os"
+
 	"finance-tracker/config"
 	"finance-tracker/controllers"
 	"finance-tracker/middleware"
@@ -16,14 +18,22 @@ func SetupRouter(
 	budgetCtrl *controllers.BudgetController,
 	dashboardCtrl *controllers.DashboardController,
 ) *gin.Engine {
+	if os.Getenv("ENV") == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.New()
 
-	r.Use(
+	middlewares := []gin.HandlerFunc{
 		middleware.SecurityHeadersMiddleware(),
 		middleware.CORSMiddleware(cfg.AllowedOrigins),
-		gin.Logger(),
 		gin.Recovery(),
-	)
+	}
+	// Only enable request logger in non-production to avoid leaking sensitive data
+	if os.Getenv("ENV") != "production" {
+		middlewares = append([]gin.HandlerFunc{gin.Logger()}, middlewares...)
+	}
+	r.Use(middlewares...)
 
 	auth := r.Group("/api/auth")
 	{

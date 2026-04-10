@@ -115,7 +115,7 @@ func (s *dashboardService) sumByType(userID uint, txType string, month, year int
 		Month: month,
 		Year:  year,
 		Page:  1,
-		Limit: 100000,
+		Limit: 10000,
 	})
 	if err != nil {
 		return 0, err

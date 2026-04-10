@@ -2,21 +2,24 @@
 .env
 .env.local
 .env.*.local
+.env.production
+.env.staging
 
 # Binary hasil build
 finance-tracker
+finance-tracker.exe
 *.exe
 *.out
 /bin/
 
-# Go build cache
+# Go build cache & vendor
 /vendor/
 
 # Test output & coverage
 *.test
-*.out
 coverage.html
 coverage.out
+*.prof
 
 # Property-based test failure corpus (rapid testdata)
 tests/property/testdata/
@@ -29,13 +32,32 @@ finance-tracker/
 .idea/
 *.swp
 *.swo
+*.DS_Store
 
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
 *.log
+logs/
 
 # Air (live reload tool)
 tmp/
+
+# TLS / SSL certificates & private keys — JANGAN PERNAH di-push
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# Docker secrets / override
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+
+# Kiro IDE
+.kiro/
