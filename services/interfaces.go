@@ -27,6 +27,7 @@ type CategoryService interface {
 
 type TransactionService interface {
 	GetAllByUser(userID uint, filter dto.TransactionFilter) ([]models.Transaction, int64, error)
+	GetByIDAndUser(userID uint, txID uint) (*models.Transaction, error)
 	Create(userID uint, req dto.TransactionRequest) (*models.Transaction, error)
 	Update(userID uint, txID uint, req dto.TransactionRequest) (*models.Transaction, error)
 	Delete(userID uint, txID uint) error

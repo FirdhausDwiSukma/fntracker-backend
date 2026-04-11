@@ -53,6 +53,7 @@ func SetupRouter(
 
 		protected.GET("/transactions", transactionCtrl.GetAll)
 		protected.GET("/transactions/export", transactionCtrl.Export)
+		protected.GET("/transactions/:id", transactionCtrl.GetByID)
 		protected.POST("/transactions", transactionCtrl.Create)
 		protected.PUT("/transactions/:id", transactionCtrl.Update)
 		protected.DELETE("/transactions/:id", transactionCtrl.Delete)

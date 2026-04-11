@@ -20,6 +20,29 @@ func NewTransactionController(txService services.TransactionService) *Transactio
 	return &TransactionController{txService: txService}
 }
 
+func (c *TransactionController) GetByID(ctx *gin.Context) {
+	userID := ctx.GetUint("userID")
+
+	idParam := ctx.Param("id")
+	txID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		utils.ErrorResponse(ctx, http.StatusBadRequest, utils.ErrInvalidInput)
+		return
+	}
+
+	tx, err := c.txService.GetByIDAndUser(userID, uint(txID))
+	if err != nil {
+		if err.Error() == "not found" {
+			utils.ErrorResponse(ctx, http.StatusNotFound, utils.ErrNotFound)
+			return
+		}
+		utils.ErrorResponse(ctx, http.StatusInternalServerError, utils.ErrInternalServer)
+		return
+	}
+
+	utils.SuccessResponse(ctx, http.StatusOK, "ok", dto.ToTransactionResponsePtr(tx))
+}
+
 func (c *TransactionController) GetAll(ctx *gin.Context) {
 	userID := ctx.GetUint("userID")
 

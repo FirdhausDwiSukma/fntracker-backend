@@ -101,10 +101,23 @@ func cleanupUser(db *gorm.DB, email string) {
 // loginCounter is used to generate unique IPs for each login call to avoid rate limiting.
 var loginCounter int64
 
-// registerAndLogin registers a user and returns the jwt + csrf cookie values.
+// registerAndLogin registers a user (pre-cleaning any stale record first) and
+// returns the jwt + csrf cookie values.
 // Each call uses a unique source IP to avoid triggering the login rate limiter.
 func registerAndLogin(t *testing.T, router *gin.Engine, name, email, password string) (jwtVal, csrfVal string, ok bool) {
 	t.Helper()
+	return registerAndLoginWithDB(t, router, nil, name, email, password)
+}
+
+// registerAndLoginWithDB is like registerAndLogin but pre-cleans any stale DB
+// record for the given email before attempting registration.
+func registerAndLoginWithDB(t *testing.T, router *gin.Engine, db *gorm.DB, name, email, password string) (jwtVal, csrfVal string, ok bool) {
+	t.Helper()
+
+	// Pre-clean stale records so register always succeeds on repeated runs.
+	if db != nil {
+		cleanupUser(db, email)
+	}
 
 	w := doRegister(router, name, email, password)
 	if w.Code != http.StatusCreated {
@@ -275,11 +288,11 @@ func TestProperty9_DataIsolationBetweenUsers(t *testing.T) {
 			cleanupUser(env.db, emailB)
 		})
 
-		jwtA, csrfA, okA := registerAndLogin(t, env.router, nameA, emailA, password)
+		jwtA, csrfA, okA := registerAndLoginWithDB(t, env.router, env.db, nameA, emailA, password)
 		if !okA {
 			rt.Fatalf("failed to register/login user A (%s)", emailA)
 		}
-		jwtB, csrfB, okB := registerAndLogin(t, env.router, nameB, emailB, password)
+		jwtB, csrfB, okB := registerAndLoginWithDB(t, env.router, env.db, nameB, emailB, password)
 		if !okB {
 			rt.Fatalf("failed to register/login user B (%s)", emailB)
 		}
@@ -346,11 +359,11 @@ func TestProperty10_ResourceOwnershipEnforcement(t *testing.T) {
 			cleanupUser(env.db, emailAttacker)
 		})
 
-		jwtOwner, csrfOwner, okOwner := registerAndLogin(t, env.router, nameOwner, emailOwner, password)
+		jwtOwner, csrfOwner, okOwner := registerAndLoginWithDB(t, env.router, env.db, nameOwner, emailOwner, password)
 		if !okOwner {
 			rt.Fatalf("failed to register/login owner (%s)", emailOwner)
 		}
-		jwtAttacker, csrfAttacker, okAttacker := registerAndLogin(t, env.router, nameAttacker, emailAttacker, password)
+		jwtAttacker, csrfAttacker, okAttacker := registerAndLoginWithDB(t, env.router, env.db, nameAttacker, emailAttacker, password)
 		if !okAttacker {
 			rt.Fatalf("failed to register/login attacker (%s)", emailAttacker)
 		}
@@ -418,7 +431,7 @@ func TestProperty11_CategoryTypeValidationRejectsInvalid(t *testing.T) {
 
 		t.Cleanup(func() { cleanupUser(env.db, email) })
 
-		jwt, csrf, ok := registerAndLogin(t, env.router, name, email, password)
+		jwt, csrf, ok := registerAndLoginWithDB(t, env.router, env.db, name, email, password)
 		if !ok {
 			rt.Fatalf("failed to register/login user (%s)", email)
 		}
@@ -447,7 +460,7 @@ func TestProperty11b_ValidTypesAlwaysAccepted(t *testing.T) {
 
 		t.Cleanup(func() { cleanupUser(env.db, email) })
 
-		jwt, csrf, ok := registerAndLogin(t, env.router, name, email, password)
+		jwt, csrf, ok := registerAndLoginWithDB(t, env.router, env.db, name, email, password)
 		if !ok {
 			rt.Fatalf("failed to register/login user (%s)", email)
 		}
@@ -482,7 +495,7 @@ func TestProperty12_DuplicateCategoryRejected(t *testing.T) {
 
 		t.Cleanup(func() { cleanupUser(env.db, email) })
 
-		jwt, csrf, ok := registerAndLogin(t, env.router, name, email, password)
+		jwt, csrf, ok := registerAndLoginWithDB(t, env.router, env.db, name, email, password)
 		if !ok {
 			rt.Fatalf("failed to register/login user (%s)", email)
 		}
@@ -519,7 +532,7 @@ func TestProperty12b_SameNameDifferentTypeAllowed(t *testing.T) {
 
 		t.Cleanup(func() { cleanupUser(env.db, email) })
 
-		jwt, csrf, ok := registerAndLogin(t, env.router, name, email, password)
+		jwt, csrf, ok := registerAndLoginWithDB(t, env.router, env.db, name, email, password)
 		if !ok {
 			rt.Fatalf("failed to register/login user (%s)", email)
 		}

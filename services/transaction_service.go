@@ -26,6 +26,17 @@ func (s *transactionService) GetAllByUser(userID uint, filter dto.TransactionFil
 	return s.txRepo.FindAllByUser(userID, filter)
 }
 
+func (s *transactionService) GetByIDAndUser(userID uint, txID uint) (*models.Transaction, error) {
+	tx, err := s.txRepo.FindByIDAndUser(txID, userID)
+	if err != nil {
+		return nil, err
+	}
+	if tx == nil {
+		return nil, errors.New("not found")
+	}
+	return tx, nil
+}
+
 func (s *transactionService) Create(userID uint, req dto.TransactionRequest) (*models.Transaction, error) {
 	// Validate category ownership
 	cat, err := s.categoryRepo.FindByIDAndUser(req.CategoryID, userID)

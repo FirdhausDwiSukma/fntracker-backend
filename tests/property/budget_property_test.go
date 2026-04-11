@@ -188,10 +188,10 @@ func validYearGen() *rapid.Generator[int] {
 
 // setupBudgetUser registers a user, logs in, and creates one expense category.
 // Returns jwt, csrf, expenseCatID.
-func setupBudgetUser(t *testing.T, router *gin.Engine, email, name, password string) (jwtVal, csrfVal string, expenseCatID uint, ok bool) {
+func setupBudgetUser(t *testing.T, router *gin.Engine, db *gorm.DB, email, name, password string) (jwtVal, csrfVal string, expenseCatID uint, ok bool) {
 	t.Helper()
 
-	jwtVal, csrfVal, ok = registerAndLogin(t, router, name, email, password)
+	jwtVal, csrfVal, ok = registerAndLoginWithDB(t, router, db, name, email, password)
 	if !ok {
 		return "", "", 0, false
 	}
@@ -228,7 +228,7 @@ func TestProperty15_BudgetPercentageCalculationAccurate(t *testing.T) {
 			cleanupUser(env.db, email)
 		})
 
-		jwtVal, csrfVal, expenseCatID, ok := setupBudgetUser(t, env.router, email, name, password)
+		jwtVal, csrfVal, expenseCatID, ok := setupBudgetUser(t, env.router, env.db, email, name, password)
 		if !ok {
 			rt.Fatalf("failed to set up user and category for %s", email)
 		}
@@ -315,7 +315,7 @@ func TestProperty16_BudgetWarningAndExceededFlags(t *testing.T) {
 			cleanupUser(env.db, email)
 		})
 
-		jwtVal, csrfVal, expenseCatID, ok := setupBudgetUser(t, env.router, email, name, password)
+		jwtVal, csrfVal, expenseCatID, ok := setupBudgetUser(t, env.router, env.db, email, name, password)
 		if !ok {
 			rt.Fatalf("failed to set up user and category for %s", email)
 		}
@@ -402,7 +402,7 @@ func TestProperty17_BudgetUniquenessConstraint(t *testing.T) {
 			cleanupUser(env.db, email)
 		})
 
-		jwtVal, csrfVal, expenseCatID, ok := setupBudgetUser(t, env.router, email, name, password)
+		jwtVal, csrfVal, expenseCatID, ok := setupBudgetUser(t, env.router, env.db, email, name, password)
 		if !ok {
 			rt.Fatalf("failed to set up user and category for %s", email)
 		}

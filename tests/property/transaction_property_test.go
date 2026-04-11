@@ -150,7 +150,7 @@ func validDescriptionGen() *rapid.Generator[string] {
 func setupTransactionUser(t *testing.T, rt *rapid.T, env *testEnv, email, name, password string) (jwtVal, csrfVal string, incomeCatID, expenseCatID uint, ok bool) {
 	t.Helper()
 
-	jwtVal, csrfVal, ok = registerAndLogin(t, env.router, name, email, password)
+	jwtVal, csrfVal, ok = registerAndLoginWithDB(t, env.router, env.db, name, email, password)
 	if !ok {
 		return "", "", 0, 0, false
 	}
